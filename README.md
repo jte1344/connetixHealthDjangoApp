@@ -1,8 +1,8 @@
 Run server:
 
-\tcd into DjangoApp
-\tpython manage.py runserver
+cd into DjangoApp
+python manage.py runserver
 
 update models in database:
 
-\tpython manage.py makemigrations index
+python manage.py makemigrations index
