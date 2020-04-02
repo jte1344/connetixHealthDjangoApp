@@ -4,9 +4,16 @@ cd into DjangoApp
 
 python manage.py runserver
 
-update models in database:
+
+
+
+
+--if you are getting a migration error update models in database:
 
 python manage.py makemigrations index
+
+
+
 
 --if you get an error like: cannot find module: lxml
 

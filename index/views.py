@@ -135,6 +135,12 @@ def interactions(request):
             to the user curerntly would be 0 (this will only occur after the form
             has been submitted by the user and is on line 8 in index/templates/index/interactions.html)
             We can worry about the html later
+
+            Check the README.md in the root directory for info on how to get the server up locally
+
+            To view this code open localhost:8000/interactions in a web browser after running 'python manage.py runserver'
+
+            Once you enter something into the form and submit the 0 will appear under the navbar
             '''
 
             return render(request, 'index/interactions.html', {'data': data, 'site': site})
@@ -142,7 +148,7 @@ def interactions(request):
 
         #if the form is invalid
         else:
-            return render(request, 'index/interactions.html', {'site': site})#always send in site like this 
+            return render(request, 'index/interactions.html', {'site': site})#always send in site like this
 
 
     #this is for before the user has input data
