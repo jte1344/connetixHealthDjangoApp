@@ -34,7 +34,7 @@ def index(request):
             location = request.POST["location"]
             medication = request.POST["medication"]
 
-            data = RxScrape(location, medication)
+            #localPrice = RxScrape(location, medication)
 
             data = {'location': location, 'medication': medication}
 
