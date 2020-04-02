@@ -4,6 +4,10 @@
 {% include 'partials/header.html' %}
 {% include 'partials/navbar.html' %}
 
+<br>
+<h1 class="text-center">{{data}}</h1>
+<br>
+
 <body>
   <div class="container mt-3">
     <div class="row">
@@ -142,26 +146,17 @@
         <div class="col-lg-4 col-12">
           <div class="row mx-0">
             <div class="col-12 card bg-light mx-auto">
-              <h3 class="text-center card-header">Find Your Medications</h3>
+              <h4 class="text-center card-header">Find Drug Interactions</h4>
               {% load widget_tweaks %}
               <form class="card-body" method="post">
                 {% csrf_token %}
                 <div class="form-group row">
-                  <label for="locFrom" class="col-form-label">Location: </label>
+                  <label for="medications" class="col-form-label">Medication: </label>
                   <div class="input-group">
                     <div class="input-group-prepend">
                       <div class="input-group-text" id="basic-addon1">></div>
                     </div>
-                    {% render_field form.location class="form-control" %}
-                  </div>
-                </div>
-                <div class="form-group row">
-                  <label for="medication" class="col-form-label">Medication: </label>
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text" id="basic-addon1">></div>
-                    </div>
-                    {% render_field form.medication class="form-control" %}
+                    {% render_field form.medications class="form-control" %}
                   </div>
                 </div>
                 <p class="text-center"><button type="submit" class="text-center btn btn-danger">Search</button></p>
