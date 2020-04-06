@@ -1,11 +1,31 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 
 <head>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>{{site.siteName}}</title>
+
   <!-- Bootstrap -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" type="text/css">
   <link href="{% static 'index/stylesheets/custom.css' %}" rel="stylesheet" type="text/css">
+
+
+  <!-- Load the AngularJS library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key={{site.DevApiKeyOnly}}&libraries=places"></script>
+
+  <script src="{% static 'index/angular/medAngular.js' %}"></script>
+
 </head>
+
+<body>
+
+  <div ng-app="medLookUp">
+
+    {% include 'partials/navbar.html' %}

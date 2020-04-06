@@ -3,13 +3,10 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.http import JsonResponse
 from .forms import *
 from time import sleep
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
 from collections import OrderedDict
 from datetime import datetime
 from time import time
@@ -20,69 +17,54 @@ import bs4
 import requests,re
 import os,sys
 
-def RxScrape(medication, location):
+def RxScrape(medication):
 
-    data = 0
+    url = "https://www.drugs.com/price-guide/{0}".format(medication)
 
-    url = "https://familywize.org/drug-price-look-up-tool" #.format(medication, location)
+    # Make a GET request to fetch the raw HTML content
+    html_content = requests.get(url).text
 
-    opts = Options()
-    opts.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36")
+    # Parse the html content
+    soup = BeautifulSoup(html_content, "lxml")
+
+    drugName = []
+    table = soup.find_all("table", attrs={"class": "data-list"})
+    tableName = soup.find_all("div", attrs={"class": "dosage-block"})
+    for i in range(0, len(tableName)):
+        drugName.append(tableName[i].text)
+
+    quantity = []
+    quantityData = table[0].find_all("td", attrs={"class": ""})
+    for j in range(0, len(quantityData)):
+        quantity.append(quantityData[j].text)
+
+    unitPrice = []
+    totalPrice = []
+    priceData = table[0].find_all("td", attrs={"class": "text-right"})
+
+    for k in range(0, len(quantityData)):
+        unitPrice.append(priceData[0].text)
+        priceData.pop(0)
+        totalPrice.append(priceData[0].text)
+        priceData.pop(0)
+
+    data = []
+    for i in range(0, len(drugName)):
+        data.append({"title" : drugName[i], "data" : []})
+        for j in range(0, len(quantity)):
+                data[i]["data"].append({"quantity" : quantity[j], "unitPrice" : unitPrice[j], "totalPrice" : totalPrice[j]})
 
 
-    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-    driver = webdriver.Chrome(chrome_options=opts, executable_path=os.path.join(BASE_DIR, 'chromedriver.exe'))
+    return data
 
-
-    ##driver=webdriver.Chrome()
-    driver.get(url)
-    #innerHTML = driver.execute_script("return document.body.innerHTML")
-    ##print(driver.page_source)
-
-    driver.find_element_by_name("DrugName").send_keys("lipitor")
-    driver.find_element_by_name("ZipCode").send_keys("80907")
-
-    element = driver.find_element_by_css_selector("button.fw-btn-orange").click()
-
-    sleep(5)
-
-    element = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.CLASS_NAME, "fw-btn-orange fw-gtm-getcard fw-ptr-cardmodalbutton"))
-    )
-
-    elem = driver.find_element_by_xpath("//*")
-    source_code = elem.get_attribute("outerHTML")
-
-    with open('test.html', 'a') as f:
-        f.write(source_code)
-
-        driver.quit()
-
-        return data
 
 def index(request):
+
+
     with open('siteData.JSON') as f:
       site = json.load(f)
 
-    if request.method == 'POST':
-        form = LocalDrug(request.POST)
-
-        if form.is_valid():
-
-            #gets user defined variables
-            location = request.POST["location"]
-            medication = request.POST["medication"]
-
-            #localPrice = RxScrape(location, medication)
-
-            data = {'location': location, 'medication': medication}
-
-            return render(request, 'index/index.html', {'data': data, 'site': site})
-
-    else:
-
-        form = LocalDrug()
-        return render(request, 'index/index.html', {'form': form, 'site': site})
+    return render(request, 'index/index.html', {'site': site})
 
 
 #this method gets called when a user visits /interactions on the siteName
@@ -159,3 +141,12 @@ def interactions(request):
 
         #sends in form and site data
         return render(request, 'index/interactions.html', {'form': form, 'site': site})
+
+
+def local(request, medication):
+
+    data = RxScrape(medication)
+
+    print(medication)
+
+    return JsonResponse(data, safe=False)
