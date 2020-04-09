@@ -1,34 +1,9 @@
 var cities = [{
-    city: 'India',
-    desc: 'This is the best country in the world!',
-    lat: 23.200000,
-    long: 79.225487
-  },
-  {
-    city: 'New Delhi',
-    desc: 'The Heart of India!',
-    lat: 28.500000,
-    long: 77.250000
-  },
-  {
-    city: 'Mumbai',
-    desc: 'Bollywood city!',
-    lat: 19.000000,
-    long: 72.90000
-  },
-  {
-    city: 'Kolkata',
-    desc: 'Howrah Bridge!',
-    lat: 22.500000,
-    long: 88.400000
-  },
-  {
-    city: 'Chennai  ',
-    desc: 'Kathipara Bridge!',
-    lat: 13.000000,
-    long: 80.250000
-  }
-];
+  city: 'Colorado Springs',
+  desc: 'UCCS!',
+  lat: 38.893079,
+  long: -104.800931
+}];
 /*
 ---------- Components of an AngularJS Application ----------
 
@@ -85,6 +60,7 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
   $scope.banner = ""
   $scope.location = ""
   $scope.medication = ""
+  $scope.interactionMeds = ""
   $scope.status = ""
 
   $scope.submit = function() {
@@ -98,6 +74,12 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
     }
   }
 
+  $scope.submitInteractions = function() {
+    if ($scope.interactionMeds) {
+      $scope.banner = "Searching for: " + $scope.interactionMeds + "..."
+    }
+  }
+
   function apiCall(medication) {
     console.log(medication)
     $http.get('/local/' + medication).then(function(response) {
@@ -108,6 +90,7 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
       $scope.status = response.status
       if ($scope.status >= 400) {
         $scope.banner = "Unable to find: " + $scope.medication
+        $scope.local = ""
       }
     })
 
@@ -118,50 +101,50 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
     var input = [];
     for (var i = min; i <= max; i += step) input.push(i);
     return input;
-  };
-
-
-
-
-  var mapOptions = {
-    zoom: 4,
-    center: new google.maps.LatLng(25, 80),
-    mapTypeId: google.maps.MapTypeId.TERRAIN
-  }
-
-  $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
-
-  $scope.markers = [];
-
-  var infoWindow = new google.maps.InfoWindow();
-
-  var createMarker = function(info) {
-
-    var marker = new google.maps.Marker({
-      map: $scope.map,
-      position: new google.maps.LatLng(info.lat, info.long),
-      title: info.city
-    });
-    marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
-
-    google.maps.event.addListener(marker, 'click', function() {
-      infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
-      infoWindow.open($scope.map, marker);
-    });
-
-    $scope.markers.push(marker);
   }
 
 
-  for (i = 0; i < cities.length; i++) {
-    createMarker(cities[i]);
-  }
 
-  $scope.openInfoWindow = function(e, selectedMarker) {
-    e.preventDefault();
-    google.maps.event.trigger(selectedMarker, 'click');
-  }
+  /*
+    var mapOptions = {
+      zoom: 11,
+      center: new google.maps.LatLng($scope.lat, $scope.lng),
+      mapTypeId: google.maps.MapTypeId.TERRAIN
+    }
 
+    $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+    $scope.markers = [];
+
+    var infoWindow = new google.maps.InfoWindow();
+
+    var createMarker = function(info) {
+
+      var marker = new google.maps.Marker({
+        map: $scope.map,
+        position: new google.maps.LatLng(info.lat, info.long),
+        title: info.city
+      });
+      marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
+        infoWindow.open($scope.map, marker);
+      });
+
+      $scope.markers.push(marker);
+    }
+
+
+    for (i = 0; i < cities.length; i++) {
+      createMarker(cities[i]);
+    }
+
+    $scope.openInfoWindow = function(e, selectedMarker) {
+      e.preventDefault();
+      google.maps.event.trigger(selectedMarker, 'click');
+    }
+  */
 
 
 
