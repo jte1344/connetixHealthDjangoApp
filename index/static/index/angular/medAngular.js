@@ -78,6 +78,23 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
     if ($scope.interactionMeds) {
       $scope.banner = "Searching for: " + $scope.interactionMeds + "..."
     }
+    interactionsApiCall($scope.interactionMeds)
+  }
+
+  function interactionsApiCall(medication) {
+    console.log(medication)
+    $http.get('/interactionsAPI/' + medication).then(function(response) {
+      $scope.local = response.data
+      $scope.status = response.status
+    }, function(response) {
+      $scope.data = response.data || 'Request failed'
+      $scope.status = response.status
+      if ($scope.status >= 400) {
+        $scope.banner = "Unable to find: " + $scope.medication
+        $scope.local = ""
+      }
+    })
+
   }
 
   function apiCall(medication) {

@@ -1,5 +1,4 @@
-
-pythonimport requests
+import requests
 
 # Base API URL of nih.gov
 api_url_base = 'https://rxnav.nlm.nih.gov/REST'
