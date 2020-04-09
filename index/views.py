@@ -94,11 +94,13 @@ def local(request, medication):
 
 def interactionsAPI(request, medication):
 
-    
+
 
     #medication is the comma seperated value data from user
 
-    data = "" #nih app call goes here (JSON data returned from NIH)
+    data = {
+        "UserInput" : medication
+    } #nih app call goes here (JSON data returned from NIH)
 
     print("Successful call to interactions API using: " + medication)
 
