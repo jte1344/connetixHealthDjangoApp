@@ -63,6 +63,7 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
   $scope.interactionMeds = ""
   $scope.status = ""
 
+  //home page submit button function
   $scope.submit = function() {
     if ($scope.location && $scope.medication) {
       $scope.banner = "Searching for: " + $scope.medication + " at: " + $scope.location + "..."
@@ -74,29 +75,7 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
     }
   }
 
-  $scope.submitInteractions = function() {
-    if ($scope.interactionMeds) {
-      $scope.banner = "Searching for: " + $scope.interactionMeds + "..."
-    }
-    interactionsApiCall($scope.interactionMeds)
-  }
-
-  function interactionsApiCall(medication) {
-    console.log(medication)
-    $http.get('/interactionsAPI/' + medication).then(function(response) {
-      $scope.local = response.data
-      $scope.status = response.status
-    }, function(response) {
-      $scope.data = response.data || 'Request failed'
-      $scope.status = response.status
-      if ($scope.status >= 400) {
-        $scope.banner = "Unable to find: " + $scope.medication
-        $scope.local = ""
-      }
-    })
-
-  }
-
+  //home page api call function
   function apiCall(medication) {
     console.log(medication)
     $http.get('/local/' + medication).then(function(response) {
@@ -113,6 +92,31 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
 
   }
 
+  //interactions page submit button function
+  $scope.submitInteractions = function() {
+    if ($scope.interactionMeds) {
+      $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
+    }
+    interactionsApiCall($scope.interactionMeds)
+  }
+
+  //interactions page api call function
+  function interactionsApiCall(medication) {
+    $scope.interaction = ""
+    $http.get('/interactionsAPI/' + medication).then(function(response) {
+      $scope.interaction = response.data
+      $scope.status = response.status
+    }, function(response) {
+      $scope.data = response.data || 'Request failed'
+      $scope.status = response.status
+      if ($scope.status >= 400) {
+        $scope.banner = "Unable to find: " + $scope.medication
+        $scope.interaction = ""
+      }
+    })
+
+  }
+
   $scope.range = function(min, max, step) {
     step = step || 1;
     var input = [];
@@ -122,47 +126,46 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
 
 
 
-  /*
-    var mapOptions = {
-      zoom: 11,
-      center: new google.maps.LatLng($scope.lat, $scope.lng),
-      mapTypeId: google.maps.MapTypeId.TERRAIN
-    }
+  var mapOptions = {
+    zoom: 11,
+    center: new google.maps.LatLng($scope.lat, $scope.lng),
+    mapTypeId: google.maps.MapTypeId.TERRAIN
+  }
 
+  if (document.getElementById('map')) {
     $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  }
 
-    $scope.markers = [];
+  $scope.markers = [];
 
-    var infoWindow = new google.maps.InfoWindow();
+  var infoWindow = new google.maps.InfoWindow();
 
-    var createMarker = function(info) {
+  var createMarker = function(info) {
 
-      var marker = new google.maps.Marker({
-        map: $scope.map,
-        position: new google.maps.LatLng(info.lat, info.long),
-        title: info.city
-      });
-      marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
+    var marker = new google.maps.Marker({
+      map: $scope.map,
+      position: new google.maps.LatLng(info.lat, info.long),
+      title: info.city
+    });
+    marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
 
-      google.maps.event.addListener(marker, 'click', function() {
-        infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
-        infoWindow.open($scope.map, marker);
-      });
+    google.maps.event.addListener(marker, 'click', function() {
+      infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
+      infoWindow.open($scope.map, marker);
+    });
 
-      $scope.markers.push(marker);
-    }
+    $scope.markers.push(marker);
+  }
 
 
-    for (i = 0; i < cities.length; i++) {
-      createMarker(cities[i]);
-    }
+  for (i = 0; i < cities.length; i++) {
+    createMarker(cities[i]);
+  }
 
-    $scope.openInfoWindow = function(e, selectedMarker) {
-      e.preventDefault();
-      google.maps.event.trigger(selectedMarker, 'click');
-    }
-  */
-
+  $scope.openInfoWindow = function(e, selectedMarker) {
+    e.preventDefault();
+    google.maps.event.trigger(selectedMarker, 'click');
+  }
 
 
 

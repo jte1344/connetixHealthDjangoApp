@@ -25,12 +25,13 @@ def grab_interactions(rxcuis):
     rxcui_param = "rxcuis=" + rxcuis + "&sources=DrugBank"
     interaction_response = requests.get(api_url_base + api_interaction, rxcui_param)
     interaction_output = interaction_response.json()
-    
+
 #   print(json.dumps(interaction_output, indent=4, sort_keys=True))                                          DEBUG LINE
     return interaction_output
 
 def call_interactions(medication_list):
-    medication_list = medication_list.split(", ")
+    medication_list = medication_list.replace(", ", ",")
+    medication_list = medication_list.split(",")
     warning = []
 
     # calls grab_rxcui to get medications rxcui ids
@@ -59,6 +60,7 @@ def call_interactions(medication_list):
     if rxcui_list.__len__() > 1:
         if "fullInteractionTypeGroup" in drug_interactions:
             warning.append("Potential interactions between the listed medications:")
+            warning.append("*Information given based off active ingredient")
             for interaction in drug_interactions['fullInteractionTypeGroup'][0]['fullInteractionType']:
                 interaction_list.append(interaction['interactionPair'][0]["description"])
         else:

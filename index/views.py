@@ -29,32 +29,27 @@ def RxScrape(medication):
     soup = BeautifulSoup(html_content, "lxml")
 
     drugName = []
+    data = []
     table = soup.find_all("table", attrs={"class": "data-list"})
     tableName = soup.find_all("div", attrs={"class": "dosage-block"})
     for i in range(0, len(tableName)):
         drugName.append(tableName[i].text)
 
-    quantity = []
-    quantityData = table[0].find_all("td", attrs={"class": ""})
-    for j in range(0, len(quantityData)):
-        quantity.append(quantityData[j].text)
+        quantity = []
+        quantityData = table[i].find_all("td", attrs={"class": ""})
+        for j in range(0, len(quantityData)):
+            quantity.append(quantityData[j].text)
 
-    unitPrice = []
-    totalPrice = []
-    priceData = table[0].find_all("td", attrs={"class": "text-right"})
+        unitPrice = []
+        totalPrice = []
+        priceData = table[i].find_all("td", attrs={"class": "text-right"})
+        for k in range(0, len(quantityData)):
+            unitPrice.append(priceData[0].text)
+            priceData.pop(0)
+            totalPrice.append(priceData[0].text)
+            priceData.pop(0)
 
-    for k in range(0, len(quantityData)):
-        unitPrice.append(priceData[0].text)
-        priceData.pop(0)
-        totalPrice.append(priceData[0].text)
-        priceData.pop(0)
-
-    data = []
-    for i in range(0, len(drugName)):
-        data.append({"title" : drugName[i], "data" : []})
-        for j in range(0, len(quantity)):
-                data[i]["data"].append({"quantity" : quantity[j], "unitPrice" : unitPrice[j], "totalPrice" : totalPrice[j]})
-
+        data.append({"title" : drugName[i], "quantity" : quantity, "unitPrice" : unitPrice, "totalPrice" : totalPrice})
 
     return data
 
