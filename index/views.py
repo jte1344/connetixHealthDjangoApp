@@ -16,7 +16,7 @@ import requests
 import bs4
 import requests,re
 import os,sys
-#import NihMedicationInteraction
+import NihMedicationInteraction
 
 def RxScrape(medication):
 
@@ -95,12 +95,9 @@ def local(request, medication):
 def interactionsAPI(request, medication):
 
 
-
     #medication is the comma seperated value data from user
 
-    data = {
-        "UserInput" : medication
-    } #nih app call goes here (JSON data returned from NIH)
+    data = NihMedicationInteraction.call_interactions(medication)
 
     print("Successful call to interactions API using: " + medication)
 
