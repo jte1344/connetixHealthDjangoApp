@@ -5,7 +5,10 @@
     <div class="col-md-6 col-12">
       <div class="row">
         <div class="col-12">
-          <h3>About {{ site.sponsorName }}</h3>
+          <a class="navbar-brand mr-1" href="/">About <span class="font-italic font-weight-light" style="font-size: .7em;">by</span></a>
+          <a class="navbar-brand my-0 ml-1 p-0" href="https://www.mcharts.com/">
+            <img src="{% static 'index/img/mCharts-dark.png' %}" class="CyperLogo">
+          </a>
           <hr>
           <p>{{ site.aboutUS }}</p>
         </div>
