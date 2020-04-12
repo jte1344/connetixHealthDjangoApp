@@ -80,8 +80,6 @@ def local(request, medication):
 
     data = RxScrape(medication)
 
-    print(medication)
-
     return JsonResponse(data, safe=False)
 
 
@@ -89,11 +87,6 @@ def local(request, medication):
 
 def interactionsAPI(request, medication):
 
-
-    #medication is the comma seperated value data from user
-
     data = NihMedicationInteraction.call_interactions(medication)
-
-    print("Successful call to interactions API using: " + medication)
 
     return JsonResponse(data, safe=False)

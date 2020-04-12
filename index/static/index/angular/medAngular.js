@@ -49,13 +49,11 @@ medApp.config(function($interpolateProvider) {
 // function contains the $scope component and then it gets it and passes
 // it to the function automatically.
 
-medApp.controller('homeCtrl', function($scope, $http, $interval) {
+medApp.controller('homeCtrl', function($scope, $http) {
 
   $scope.style = {
     display: 'block'
   }
-  $scope.lat = "38.893137"
-  $scope.lng = "-104.800630"
 
   $scope.banner = ""
   $scope.location = ""
@@ -77,7 +75,6 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
 
   //home page api call function
   function apiCall(medication) {
-    console.log(medication)
     $http.get('/local/' + medication).then(function(response) {
       $scope.local = response.data
       $scope.status = response.status
@@ -123,8 +120,13 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
     for (var i = min; i <= max; i += step) input.push(i);
     return input;
   }
+  
+})
 
+medApp.controller('mapsCtrl', function($scope) {
 
+  $scope.lat = "38.893137"
+  $scope.lng = "-104.800630"
 
   var mapOptions = {
     zoom: 11,
@@ -166,7 +168,5 @@ medApp.controller('homeCtrl', function($scope, $http, $interval) {
     e.preventDefault();
     google.maps.event.trigger(selectedMarker, 'click');
   }
-
-
 
 })
