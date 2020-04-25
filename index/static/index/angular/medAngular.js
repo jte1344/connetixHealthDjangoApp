@@ -120,11 +120,13 @@ medApp.controller('homeCtrl', function($scope, $http) {
     for (var i = min; i <= max; i += step) input.push(i);
     return input;
   }
-  
+
 })
 
-medApp.controller('mapsCtrl', function($scope) {
+medApp.controller('mapsCtrl', function($scope, $window) {
 
+
+  $scope.google = ""
   $scope.lat = "38.893137"
   $scope.lng = "-104.800630"
 
