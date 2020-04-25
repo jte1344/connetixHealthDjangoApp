@@ -49,7 +49,7 @@ medApp.config(function($interpolateProvider) {
 // function contains the $scope component and then it gets it and passes
 // it to the function automatically.
 
-medApp.controller('homeCtrl', function($scope, $http) {
+medApp.controller('homeCtrl', function($scope, $http, $window) {
 
   $scope.style = {
     display: 'block'
@@ -123,7 +123,7 @@ medApp.controller('homeCtrl', function($scope, $http) {
 
 })
 
-medApp.controller('mapsCtrl', function($scope, $window) {
+medApp.controller('mapsCtrl', function($scope) {
 
 
   $scope.lat = "38.893137"
