@@ -56,7 +56,6 @@ def RxScrape(medication):
 
 def index(request):
 
-
     with open('siteData.JSON') as f:
       site = json.load(f)
 

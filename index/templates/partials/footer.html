@@ -5,7 +5,7 @@
     <div class="col-md-6 col-12">
       <div class="row">
         <div class="col-12">
-          <a class="navbar-brand mr-1" href="/">About <span class="font-italic font-weight-light" style="font-size: .7em;">by</span></a>
+          <h3 class="navbar-brand mr-1 text-dark" href="/">About</h3>
           <a class="navbar-brand my-0 ml-1 p-0" href="https://www.mcharts.com/">
             <img src="{% static 'index/img/mCharts-dark.png' %}" class="CyperLogo">
           </a>
@@ -15,7 +15,8 @@
       </div>
     </div>
     <div class="col-md-6 col-12 mt-md-0 mt-2">
-      <h3>Contact Us</h3>
+      <!--
+      <h3 class="navbar-brand mr-1 text-dark">Contact Us</h3>
       <hr>
       <address>
         <strong>MyStoreFront, Inc.</strong><br>
@@ -27,11 +28,12 @@
         <strong>Full Name</strong><br>
         <a href="mailto:#">first.last@example.com</a>
       </address>
+      -->
     </div>
   </div>
 </div>
-</div>
-</body>
+</div>  <!-- Leave this here its opening tag is in header.html -->
+</body> <!-- Leave this here its opening tag is in header.html -->
 <footer>
   <script src="https://unpkg.com/@popperjs/core@2" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -39,4 +41,4 @@
   <script src="{% static 'index/javascripts/custom.js' %}"></script>
 </footer>
 
-</html>
+</html> <!-- Leave this here its opening tag is in header.html -->
