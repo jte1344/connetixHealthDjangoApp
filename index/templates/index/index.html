@@ -54,9 +54,7 @@
     <div class="">
       <div class="row">
         <div class="col-lg-8 col-12">
-          <div ng-controller="mapsCtrl" style="display: none;" ng-style="style">
 
-            <div data-ng-init="init()">
 
             <style>
               /* Set the size of the div element that contains the map */
@@ -67,7 +65,7 @@
                 /* The width is the width of the web page */
               }
             </style>
-            <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo&libraries=places"></script>
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo&libraries=places"></script>
 
             <!--The div element for the map -->
             <div class="rounded" id="map"></div>
@@ -80,8 +78,6 @@
              * The key parameter will contain your own API key (which is not needed for this tutorial)
              * The callback parameter executes the initMap() function
              -->
-           </div>
-          </div>
         </div>
         <hr>
         <div class="col-lg-4 col-12">
@@ -117,6 +113,11 @@
       </div>
       <div class="text-center">
         <h3 class="m-3">{[{ banner }]}</h3>
+      </div>
+      <div class="text-center">
+        <a href="{[{ exactPriceLink}]}">
+          <h5 class="m-3">{[{ exactPrice }]}</h5>
+        </a>
       </div>
       <div class="border-left border-primary" ng-if="local">
         <div ng-repeat="n in range(0, local.length - 1)">

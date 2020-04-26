@@ -56,18 +56,26 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
   }
 
   $scope.banner = ""
+  $scope.exactPrice = ""
+  $scope.exactPriceLink = ""
   $scope.location = ""
   $scope.medication = ""
   $scope.interactionMeds = ""
   $scope.status = ""
+  $scope.lowestPrice = ""
 
   //home page submit button function
   $scope.submit = function() {
     if ($scope.location && $scope.medication) {
-      $scope.banner = "Searching for: " + $scope.medication + " at: " + $scope.location + "..."
+      $scope.exactPrice = "Click here to find exact pricing at local pharmacies for: " + $scope.medication + " at GoodRx.com"
+      $scope.exactPriceLink = "https://www.goodrx.com/" + $scope.medication
+      $scope.banner = "Searching for: " + $scope.medication + " in: " + $scope.location + "..."
+      createMap($scope.location)
       apiCall($scope.medication)
       //do something with location
     } else if ($scope.medication && $scope.location == "") {
+      $scope.exactPrice = "Click here to find exact pricing at local pharmacies for: " + $scope.medication + " at GoodRx.com"
+      $scope.exactPriceLink = "https://www.goodrx.com/" + $scope.medication
       $scope.banner = "Searching for: " + $scope.medication + "..."
       apiCall($scope.medication)
     }
@@ -91,6 +99,15 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
 
   //interactions page submit button function
   $scope.submitInteractions = function() {
+    if ($scope.interactionMeds) {
+      $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
+    }
+    interactionsApiCall($scope.interactionMeds)
+  }
+
+  //interactions page URL param function
+  $scope.submitInteractionsFromURL = function(medication) {
+    $scope.interactionMeds = medication
     if ($scope.interactionMeds) {
       $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
     }
@@ -121,58 +138,115 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
     return input;
   }
 
-})
-
-medApp.controller('mapsCtrl', function($scope) {
-
+  //////////////////////////////////////////////////////////////////////////////
+  ////////BEGIN MAPS API--------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////////
 
   $scope.lat = "38.893137"
   $scope.lng = "-104.800630"
 
-  if (google == null) {
-    console.log("var google is undefined")
-  } else {
 
-    var mapOptions = {
-      zoom: 11,
-      center: new google.maps.LatLng($scope.lat, $scope.lng),
-      mapTypeId: google.maps.MapTypeId.TERRAIN
-    }
+  function createMap(location) {
+    //convert location into lat/long
+    $http.get('/mapsAPI/' + location).then(function(response) {
 
-    if (document.getElementById('map')) {
-      $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
-    }
+      console.log(response.data.results);
 
-    $scope.markers = [];
-
-    var infoWindow = new google.maps.InfoWindow();
-
-    var createMarker = function(info) {
-
-      var marker = new google.maps.Marker({
-        map: $scope.map,
-        position: new google.maps.LatLng(info.lat, info.long),
-        title: info.city
-      });
-      marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
-
-      google.maps.event.addListener(marker, 'click', function() {
-        infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
-        infoWindow.open($scope.map, marker);
-      });
-
-      $scope.markers.push(marker);
-    }
+      $scope.mapData = response.data.results || 'Request failed'
+      $scope.mapStatus = response.status
 
 
-    for (i = 0; i < cities.length; i++) {
-      createMarker(cities[i]);
-    }
+      var mapOptions = {
+        zoom: 11,
+        center: new google.maps.LatLng($scope.mapData[0].geometry.location.lat, $scope.mapData[0].geometry.location.lng),
+        mapTypeId: google.maps.MapTypeId.TERRAIN
+      }
 
-    $scope.openInfoWindow = function(e, selectedMarker) {
-      e.preventDefault();
-      google.maps.event.trigger(selectedMarker, 'click');
-    }
+      if (document.getElementById('map')) {
+        $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+      }
+
+      var uccs = new google.maps.LatLng($scope.lat, $scope.lng);
+
+      var infoWindow = new google.maps.InfoWindow();
+
+      $scope.markers = [];
+      var createMarker = function(info) {
+
+        var marker = new google.maps.Marker({
+          map: $scope.map,
+          position: new google.maps.LatLng(info.geometry.location.lat, info.geometry.location.lng),
+          title: info.name
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infoWindow.setContent('<h2>' + marker.title + '</h2>' + '<a href="https://www.google.com/maps/place/' + info.formatted_address + '">' + info.formatted_address + '</a>');
+          infoWindow.open($scope.map, marker);
+        });
+
+        $scope.markers.push(marker);
+      }
+
+
+
+
+      for (i = 0; i < $scope.mapData.length; i++) {
+        createMarker($scope.mapData[i]);
+      }
+
+      $scope.openInfoWindow = function(e, selectedMarker) {
+        e.preventDefault();
+        google.maps.event.trigger(selectedMarker, 'click');
+      }
+
+
+      if ($scope.status >= 400) {
+        $scope.banner = "Unable to find pharmacies at: " + $scope.medication
+        $scope.interaction = ""
+      }
+    })
+  }
+
+  var mapOptions = {
+    zoom: 11,
+    center: new google.maps.LatLng($scope.lat, $scope.lng),
+    mapTypeId: google.maps.MapTypeId.TERRAIN
+  }
+
+  if (document.getElementById('map')) {
+    $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+  }
+
+  var uccs = new google.maps.LatLng($scope.lat, $scope.lng);
+
+  var infoWindow = new google.maps.InfoWindow();
+
+  $scope.markers = [];
+  var createMarker = function(info) {
+
+    var marker = new google.maps.Marker({
+      map: $scope.map,
+      position: new google.maps.LatLng(info.lat, info.long),
+      title: info.city
+    });
+
+    marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
+
+    google.maps.event.addListener(marker, 'click', function() {
+      infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
+      infoWindow.open($scope.map, marker);
+    });
+
+    $scope.markers.push(marker);
+  }
+
+  for (i = 0; i < cities.length; i++) {
+    createMarker(cities[i]);
+  }
+
+  $scope.openInfoWindow = function(e, selectedMarker) {
+    e.preventDefault();
+    google.maps.event.trigger(selectedMarker, 'click');
   }
 
 })

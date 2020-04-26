@@ -75,6 +75,23 @@ def interactions(request):
 
 
 
+#this method gets called when a user visits /interactions on the siteName
+#call comes from index/urls.py
+def interactionsParam(request, medication):
+
+    #this loads in site data like the name and logo(when we make one) and saves it to the site variable
+    with open('siteData.JSON') as f:
+        #always send this to the front end in render calls
+        site = json.load(f)
+
+    print(medication)
+
+    data = {"medication" : medication}
+
+    return render(request, 'index/interactionsParam.html', {'site': site, 'data': data}) #always send in site like this
+
+
+
 def local(request, medication):
 
     data = RxScrape(medication)
@@ -87,5 +104,17 @@ def local(request, medication):
 def interactionsAPI(request, medication):
 
     data = NihMedicationInteraction.call_interactions(medication)
+
+    return JsonResponse(data, safe=False)
+
+
+def mapsAPI(request, location):
+
+    geocoding = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + location + "&key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo").json()
+
+    lat = str(geocoding['results'][0]['geometry']['location']['lat'])
+    lng = str(geocoding['results'][0]['geometry']['location']['lng'])
+
+    data = requests.get("https://maps.googleapis.com/maps/api/place/textsearch/json?query=pharmacy&location=" + lat + "," + lng + "&radius=10000&key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo").json()
 
     return JsonResponse(data, safe=False)
