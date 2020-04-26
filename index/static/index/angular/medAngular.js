@@ -54,7 +54,7 @@ medApp.controller('interactionsCtrl', function($scope, $http, $window) {
   $scope.style = {
     display: 'block'
   }
-  
+
   $scope.banner = ""
   $scope.medication = ""
   $scope.interactionMeds = ""
@@ -118,6 +118,8 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
   $scope.interactionMeds = ""
   $scope.status = ""
   $scope.lowestPrice = ""
+  $scope.lowestPriceTitle = ""
+  $scope.lowestPriceQuantity = ""
 
   //home page submit button function
   $scope.submit = function() {
@@ -140,6 +142,9 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
   function apiCall(medication) {
     $http.get('/local/' + medication).then(function(response) {
       $scope.local = response.data
+      $scope.lowestPrice = response.data[0].totalPrice[0]
+      $scope.lowestPriceTitle = response.data[0].title
+      $scope.lowestPriceQuantity = response.data[0].quantity[0]
       $scope.status = response.status
     }, function(response) {
       $scope.data = response.data || 'Request failed'
@@ -200,7 +205,12 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
         });
 
         google.maps.event.addListener(marker, 'click', function() {
-          infoWindow.setContent('<h2>' + marker.title + '</h2>' + '<a href="https://www.google.com/maps/place/' + info.formatted_address + '">' + info.formatted_address + '</a>');
+
+          infoWindow.setContent('<h2 class="mb-0">' + marker.title + '</h2>' +
+            '<h4 class="mb-0">Estimated: ' + $scope.lowestPrice + '<span style="font-size: 12px;">(May not be actual price)</span></h4>' +
+            '<p class="mb-0">' + $scope.lowestPriceTitle + 'Quantity: ' + $scope.lowestPriceQuantity + '</p>' +
+            '<a href="https://www.google.com/maps/place/' + info.formatted_address + '">' + info.formatted_address + '</a>');
+
           infoWindow.open($scope.map, marker);
         });
 

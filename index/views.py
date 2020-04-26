@@ -84,8 +84,6 @@ def interactionsParam(request, medication):
         #always send this to the front end in render calls
         site = json.load(f)
 
-    print(medication)
-
     data = {"medication" : medication}
 
     return render(request, 'index/interactionsParam.html', {'site': site, 'data': data}) #always send in site like this
