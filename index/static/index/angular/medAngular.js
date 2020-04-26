@@ -49,6 +49,61 @@ medApp.config(function($interpolateProvider) {
 // function contains the $scope component and then it gets it and passes
 // it to the function automatically.
 
+medApp.controller('interactionsCtrl', function($scope, $http, $window) {
+
+  $scope.style = {
+    display: 'block'
+  }
+  
+  $scope.banner = ""
+  $scope.medication = ""
+  $scope.interactionMeds = ""
+  $scope.status = ""
+  $scope.lowestPrice = ""
+
+
+  //interactions page submit button function
+  $scope.submitInteractions = function() {
+    if ($scope.interactionMeds) {
+      $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
+    }
+    interactionsApiCall($scope.interactionMeds)
+  }
+
+  //interactions page URL param function
+  $scope.submitInteractionsFromURL = function(medication) {
+    $scope.interactionMeds = medication
+    if ($scope.interactionMeds) {
+      $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
+    }
+    interactionsApiCall($scope.interactionMeds)
+  }
+
+  //interactions page api call function
+  function interactionsApiCall(medication) {
+    $scope.interaction = ""
+    $http.get('/interactionsAPI/' + medication).then(function(response) {
+      $scope.interaction = response.data
+      $scope.status = response.status
+    }, function(response) {
+      $scope.data = response.data || 'Request failed'
+      $scope.status = response.status
+      if ($scope.status >= 400) {
+        $scope.banner = "Unable to find: " + $scope.medication
+        $scope.interaction = ""
+      }
+    })
+
+  }
+
+  $scope.range = function(min, max, step) {
+    step = step || 1;
+    var input = [];
+    for (var i = min; i <= max; i += step) input.push(i);
+    return input;
+  }
+})
+
 medApp.controller('homeCtrl', function($scope, $http, $window) {
 
   $scope.style = {
@@ -94,41 +149,6 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
         $scope.local = ""
       }
     })
-
-  }
-
-  //interactions page submit button function
-  $scope.submitInteractions = function() {
-    if ($scope.interactionMeds) {
-      $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
-    }
-    interactionsApiCall($scope.interactionMeds)
-  }
-
-  //interactions page URL param function
-  $scope.submitInteractionsFromURL = function(medication) {
-    $scope.interactionMeds = medication
-    if ($scope.interactionMeds) {
-      $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
-    }
-    interactionsApiCall($scope.interactionMeds)
-  }
-
-  //interactions page api call function
-  function interactionsApiCall(medication) {
-    $scope.interaction = ""
-    $http.get('/interactionsAPI/' + medication).then(function(response) {
-      $scope.interaction = response.data
-      $scope.status = response.status
-    }, function(response) {
-      $scope.data = response.data || 'Request failed'
-      $scope.status = response.status
-      if ($scope.status >= 400) {
-        $scope.banner = "Unable to find: " + $scope.medication
-        $scope.interaction = ""
-      }
-    })
-
   }
 
   $scope.range = function(min, max, step) {
