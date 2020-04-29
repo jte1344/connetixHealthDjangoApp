@@ -108,12 +108,12 @@ def interactionsAPI(request, medication):
 #API call to local pharmacies google maps API
 def mapsAPI(request, location):
     #converts location inputted by user to a lat and longitude
-    geocoding = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + location + "&key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo").json()
+    geocoding = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + location + "&key=YOUR_KEY_HERE").json()
     lat = str(geocoding['results'][0]['geometry']['location']['lat'])
     lng = str(geocoding['results'][0]['geometry']['location']['lng'])
 
     #searches for pharmacies in said lat/lng
-    data = requests.get("https://maps.googleapis.com/maps/api/place/textsearch/json?query=pharmacy&location=" + lat + "," + lng + "&radius=10000&key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo").json()
+    data = requests.get("https://maps.googleapis.com/maps/api/place/textsearch/json?query=pharmacy&location=" + lat + "," + lng + "&radius=10000&key=YOUR_KEY_HERE").json()
 
 
 
