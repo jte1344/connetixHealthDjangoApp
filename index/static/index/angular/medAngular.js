@@ -33,8 +33,9 @@ Many services are provided for common tasks like using AJAX techniques to dynami
 
 var medApp = angular.module('medLookUp', [])
 
-
-//because Django :[
+//changes how data is spliced into html istead of the default {{}}
+//we now use {[{}]}
+//because Django's default is already {{}}
 medApp.config(function($interpolateProvider) {
   $interpolateProvider.startSymbol('{[{')
   $interpolateProvider.endSymbol('}]}')
@@ -49,12 +50,16 @@ medApp.config(function($interpolateProvider) {
 // function contains the $scope component and then it gets it and passes
 // it to the function automatically.
 
+
+//controller for interaction pages
 medApp.controller('interactionsCtrl', function($scope, $http, $window) {
 
+  //waits for angular to load before displaying to html
   $scope.style = {
     display: 'block'
   }
 
+  //controller variables in scope
   $scope.banner = ""
   $scope.medication = ""
   $scope.interactionMeds = ""
@@ -67,6 +72,7 @@ medApp.controller('interactionsCtrl', function($scope, $http, $window) {
     if ($scope.interactionMeds) {
       $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
     }
+    //calls function to make api call to backend
     interactionsApiCall($scope.interactionMeds)
   }
 
@@ -76,6 +82,7 @@ medApp.controller('interactionsCtrl', function($scope, $http, $window) {
     if ($scope.interactionMeds) {
       $scope.banner = "Searching for interactions in: " + $scope.interactionMeds + "..."
     }
+    //calls function to make api call to backend
     interactionsApiCall($scope.interactionMeds)
   }
 
@@ -104,12 +111,15 @@ medApp.controller('interactionsCtrl', function($scope, $http, $window) {
   }
 })
 
+//Angular controller for the home page (price and maps)
 medApp.controller('homeCtrl', function($scope, $http, $window) {
 
+  //waits for angular to load before displaying to html
   $scope.style = {
     display: 'block'
   }
 
+  //controller variables in scope
   $scope.banner = ""
   $scope.exactPrice = ""
   $scope.exactPriceLink = ""
@@ -123,29 +133,54 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
 
   //home page submit button function
   $scope.submit = function() {
+
+    //checks user input (user does NOT have to enter a location for this to work)
     if ($scope.location && $scope.medication) {
+
+      //sets up GoodRx link with inputted medication
       $scope.exactPrice = "Click here to find exact pricing at local pharmacies for: " + $scope.medication + " at GoodRx.com"
       $scope.exactPriceLink = "https://www.goodrx.com/" + $scope.medication
+
+      //Shows when search has begun
       $scope.banner = "Searching for: " + $scope.medication + " in: " + $scope.location + "..."
+
+      //calls function to make api call to backend
       createMap($scope.location)
+      //calls function to make api call to backend
       apiCall($scope.medication)
-      //do something with location
+
     } else if ($scope.medication && $scope.location == "") {
+
+      //sets up GoodRx link with inputted medication
       $scope.exactPrice = "Click here to find exact pricing at local pharmacies for: " + $scope.medication + " at GoodRx.com"
       $scope.exactPriceLink = "https://www.goodrx.com/" + $scope.medication
+
+      //Shows when search has begun
       $scope.banner = "Searching for: " + $scope.medication + "..."
+
+      //calls function to make api call to backend
       apiCall($scope.medication)
     }
   }
 
   //home page api call function
   function apiCall(medication) {
+
+    //calls the backend to retrieve data on pricing (JSON)
     $http.get('/local/' + medication).then(function(response) {
+
+      //saves data to scope variable
       $scope.local = response.data
+
+      //sets the lowest price (price, name quantity) for displaying on maps
       $scope.lowestPrice = response.data[0].totalPrice[0]
       $scope.lowestPriceTitle = response.data[0].title
       $scope.lowestPriceQuantity = response.data[0].quantity[0]
+
+      //saves response
       $scope.status = response.status
+
+      //ran if no response to the backend was successful
     }, function(response) {
       $scope.data = response.data || 'Request failed'
       $scope.status = response.status
@@ -156,6 +191,7 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
     })
   }
 
+  //used for looping inside of html
   $scope.range = function(min, max, step) {
     step = step || 1;
     var input = [];
@@ -172,40 +208,40 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
 
 
   function createMap(location) {
-    //convert location into lat/long
-    $http.get('/mapsAPI/' + location).then(function(response) {
 
-      console.log(response.data.results);
+    //calls backend api to convert location to lat&lng then return pharmacies at said lat&lng
+    $http.get('/mapsAPI/' + location).then(function(response) {
 
       $scope.mapData = response.data.results || 'Request failed'
       $scope.mapStatus = response.status
 
-
+      //centers map on first pharmacy
       var mapOptions = {
         zoom: 11,
         center: new google.maps.LatLng($scope.mapData[0].geometry.location.lat, $scope.mapData[0].geometry.location.lng),
         mapTypeId: google.maps.MapTypeId.TERRAIN
       }
 
+      //where to display map in html
       if (document.getElementById('map')) {
         $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
       }
 
-      var uccs = new google.maps.LatLng($scope.lat, $scope.lng);
 
+      //info window is opened on pin click
       var infoWindow = new google.maps.InfoWindow();
 
+      //creates marker on map
       $scope.markers = [];
       var createMarker = function(info) {
-
         var marker = new google.maps.Marker({
           map: $scope.map,
           position: new google.maps.LatLng(info.geometry.location.lat, info.geometry.location.lng),
           title: info.name
         });
 
+        //info window is opened on pin click
         google.maps.event.addListener(marker, 'click', function() {
-
           infoWindow.setContent('<h2 class="mb-0">' + marker.title + '</h2>' +
             '<h4 class="mb-0">Estimated: ' + $scope.lowestPrice + '<span style="font-size: 12px;">(May not be actual price)</span></h4>' +
             '<p class="mb-0">' + $scope.lowestPriceTitle + 'Quantity: ' + $scope.lowestPriceQuantity + '</p>' +
@@ -214,22 +250,24 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
           infoWindow.open($scope.map, marker);
         });
 
+        //pushes marker to map
         $scope.markers.push(marker);
       }
 
 
 
-
+      //calls above function for every input recieved from backend call
       for (i = 0; i < $scope.mapData.length; i++) {
         createMarker($scope.mapData[i]);
       }
+
 
       $scope.openInfoWindow = function(e, selectedMarker) {
         e.preventDefault();
         google.maps.event.trigger(selectedMarker, 'click');
       }
 
-
+      //if response failed
       if ($scope.status >= 400) {
         $scope.banner = "Unable to find pharmacies at: " + $scope.medication
         $scope.interaction = ""
@@ -237,46 +275,42 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
     })
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  ////////Below is the default map that appears on load-------------------------
+  //////////////////////////////////////////////////////////////////////////////
   var mapOptions = {
     zoom: 11,
     center: new google.maps.LatLng($scope.lat, $scope.lng),
     mapTypeId: google.maps.MapTypeId.TERRAIN
   }
-
   if (document.getElementById('map')) {
     $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
   }
-
   var uccs = new google.maps.LatLng($scope.lat, $scope.lng);
-
   var infoWindow = new google.maps.InfoWindow();
-
   $scope.markers = [];
   var createMarker = function(info) {
-
     var marker = new google.maps.Marker({
       map: $scope.map,
       position: new google.maps.LatLng(info.lat, info.long),
       title: info.city
     });
-
     marker.content = '<div class="infoWindowContent">' + info.desc + '</div>';
-
     google.maps.event.addListener(marker, 'click', function() {
       infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
       infoWindow.open($scope.map, marker);
     });
-
     $scope.markers.push(marker);
   }
-
   for (i = 0; i < cities.length; i++) {
     createMarker(cities[i]);
   }
-
   $scope.openInfoWindow = function(e, selectedMarker) {
     e.preventDefault();
     google.maps.event.trigger(selectedMarker, 'click');
   }
+  //////////////////////////////////////////////////////////////////////////////
+  ////////end default map-------------------------------------------------------
+  //////////////////////////////////////////////////////////////////////////////
 
 })

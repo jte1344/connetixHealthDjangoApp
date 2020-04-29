@@ -30,16 +30,21 @@ def RxScrape(medication):
 
     drugName = []
     data = []
+    #pulls tables off parsed html content
     table = soup.find_all("table", attrs={"class": "data-list"})
+    #gets tables (drug type) name
     tableName = soup.find_all("div", attrs={"class": "dosage-block"})
+    #formats them in json style
     for i in range(0, len(tableName)):
         drugName.append(tableName[i].text)
 
+        #formats quantity values for each element in table
         quantity = []
         quantityData = table[i].find_all("td", attrs={"class": ""})
         for j in range(0, len(quantityData)):
             quantity.append(quantityData[j].text)
 
+        #formats pricing values for each element in table
         unitPrice = []
         totalPrice = []
         priceData = table[i].find_all("td", attrs={"class": "text-right"})
@@ -49,28 +54,27 @@ def RxScrape(medication):
             totalPrice.append(priceData[0].text)
             priceData.pop(0)
 
+        #formats all data into one variable to return to funct
         data.append({"title" : drugName[i], "quantity" : quantity, "unitPrice" : unitPrice, "totalPrice" : totalPrice})
 
     return data
 
-
+#homepage call
 def index(request):
-
     with open('siteData.JSON') as f:
       site = json.load(f)
-
+    #responds with html and parameters
     return render(request, 'index/index.html', {'site': site})
 
 
 #this method gets called when a user visits /interactions on the siteName
 #call comes from index/urls.py
 def interactions(request):
-
     #this loads in site data like the name and logo(when we make one) and saves it to the site variable
     with open('siteData.JSON') as f:
         #always send this to the front end in render calls
         site = json.load(f)
-
+    #responds with html and parameters
     return render(request, 'index/interactions.html', {'site': site}) #always send in site like this
 
 
@@ -85,34 +89,34 @@ def interactionsParam(request, medication):
         site = json.load(f)
 
     data = {"medication" : medication}
-
+    #responds with html and parameters
     return render(request, 'index/interactionsParam.html', {'site': site, 'data': data}) #always send in site like this
 
 
-
+#API call to local prices api (drugs.com)
 def local(request, medication):
-
     data = RxScrape(medication)
-
+    #responds with json
     return JsonResponse(data, safe=False)
 
-
-
-
+#API call to NIH interactions API
 def interactionsAPI(request, medication):
-
     data = NihMedicationInteraction.call_interactions(medication)
-
+    #responds with json
     return JsonResponse(data, safe=False)
 
-
+#API call to local pharmacies google maps API
 def mapsAPI(request, location):
-
+    #converts location inputted by user to a lat and longitude
     geocoding = requests.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + location + "&key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo").json()
-
     lat = str(geocoding['results'][0]['geometry']['location']['lat'])
     lng = str(geocoding['results'][0]['geometry']['location']['lng'])
 
+    #searches for pharmacies in said lat/lng
     data = requests.get("https://maps.googleapis.com/maps/api/place/textsearch/json?query=pharmacy&location=" + lat + "," + lng + "&radius=10000&key=AIzaSyCx35frbsAzHQ0SZcxWoZaE7VDljeDyOgo").json()
 
+
+
+
+    #responds with json
     return JsonResponse(data, safe=False)
