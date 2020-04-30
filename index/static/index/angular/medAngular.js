@@ -227,7 +227,6 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
         $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
       }
 
-
       //info window is opened on pin click
       var infoWindow = new google.maps.InfoWindow();
 

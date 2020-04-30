@@ -2,6 +2,5 @@
   "siteName": "Medication Lookup",
   "sponsorName": "mCharts",
   "siteLogo": "{% static 'index/img/mCharts.png' %}",
-  "aboutUS": "mCharts is a Personal Health Record (PHR) application that automatically gathers health records from your medical providers. The app makes health records easy to understand and share to the right people at the right time. Your records are stored in highly secure, HIPAA-compliant systems in the cloud, so they are always available when needed, for routine care or emergency needs.",
-
+  "aboutUS": "mCharts is a Personal Health Record (PHR) application that automatically gathers health records from your medical providers. The app makes health records easy to understand and share to the right people at the right time. Your records are stored in highly secure, HIPAA-compliant systems in the cloud, so they are always available when needed, for routine care or emergency needs."
 }
