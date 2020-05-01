@@ -242,7 +242,7 @@ medApp.controller('homeCtrl', function($scope, $http, $window) {
         //info window is opened on pin click
         google.maps.event.addListener(marker, 'click', function() {
           infoWindow.setContent('<h2 class="mb-0">' + marker.title + '</h2>' +
-            '<h4 class="mb-0">Estimated: ' + $scope.lowestPrice + '<span style="font-size: 12px;">(May not be actual price)</span></h4>' +
+            '<h4 class="mb-0">Estimated: ' + $scope.lowestPrice + '<span style="font-size: 12px;"> (May not be actual price)</span></h4>' +
             '<p class="mb-0">' + $scope.lowestPriceTitle + ' - Quantity: ' + $scope.lowestPriceQuantity + '</p>' +
             '<a href="https://www.google.com/maps/place/' + info.formatted_address + '">' + info.formatted_address + '</a>');
 
